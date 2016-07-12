@@ -426,7 +426,19 @@ public class AnyProperty<Value>: PropertyProtocol {
 
 		_value = { relay.value! }
 		_producer = { prepareRelayProducer(relay.producer) }
-		_signal = { prepareRelaySignal(relay.signal) }
+
+		// Lazily initializes and shares the signal of a composed property.
+		let atomicSignal = Atomic<Signal<Value, NoError>?>(nil)
+		_signal = {
+			var signal: Signal<Value, NoError>!
+			atomicSignal.modify { innerSignal in
+				if signal == nil {
+					innerSignal = prepareRelaySignal(relay.signal)
+				}
+				signal = innerSignal
+			}
+			return signal
+		}
 	}
 }
 
