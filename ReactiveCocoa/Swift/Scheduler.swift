@@ -67,7 +67,7 @@ public final class UIScheduler: SchedulerType {
 	public init() {
 		dispatch_once(&UIScheduler.dispatchOnceToken) {
 			dispatch_queue_set_specific(
-				dispatch_get_main_queue(),
+				/*Migrator FIXME: Use a variable of type DispatchSpecificKey*/ dispatch_get_main_queue(),
 				&UIScheduler.dispatchSpecificKey,
 				&UIScheduler.dispatchSpecificContext,
 				nil
